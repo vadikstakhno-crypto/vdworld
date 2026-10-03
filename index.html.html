@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VDWORLD | Официальный сайт сервера Minecraft</title>
+    <link rel="icon" type="image/png" href="fon/icon.png">
+    
+    <!-- Подключаем пиксельный шрифт ТОЛЬКО для главных логотипов -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            /* Возвращаем стандартный, четкий и крупный шрифт */
+            font-family: -apple-system, BlinkMacSystemFont, "Comfortaa", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #3c4043;
+            overflow-x: hidden;
+            position: relative;
+        }
+        /* Анимированный фон из пиксельных частиц */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* Главный баннер (Hero) */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), 
+                        url('fon/fon.jpg') no-repeat center center/cover;
+            padding: 100px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        /* Главный логотип VDWORLD (остается пиксельным и крутым!) */
+        .logo {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 4.5rem;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ff1493 45%, #33ccff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(4px 4px 0px #000000) drop-shadow(0 0 15px rgba(255, 20, 147, 0.5));
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        /* Основной контент (белая страница как в Google Sites) */
+        .main-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 50px 60px;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+        /* Черная кнопка IP на всю ширину (крупный текст) */
+        .ip-bar {
+            background-color: #111116;
+            color: #33ccff;
+            border: none;
+            border-radius: 4px;
+            width: 100%;
+            padding: 20px;
+            font-size: 1.5rem;
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-bottom: 60px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .ip-bar:hover {
+            background-color: #1b1b22;
+            color: #ff66cc;
+        }
+        .ip-bar:active {
+            transform: scale(0.99);
+        }
+        /* Блок контента */
+        .visuals-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 50px;
+            margin-bottom: 60px;
+        }
+        @media(max-width: 900px) {
+            .visuals-section { flex-direction: column; align-items: center; text-align: center; }
+        }
+        .visuals-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 250px;
+            flex-shrink: 0;
+        }
+        .vdv-logo {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 4rem;
+            background: linear-gradient(135deg, #ff1493, #33ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.1));
+        }
+        .btn-download {
+            background-color: #111116;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 100%;
+        }
+        .btn-download:hover {
+            background-color: #ff1493;
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
+        }
+        .visuals-right {
+            flex-grow: 1;
+            text-align: left;
+        }
+        .visuals-right h2 {
+            font-size: 2.2rem;
+            color: #111116;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        /* Крупный и легко читаемый список */
+        .features-list {
+            list-style: none;
+            font-size: 1.15rem;
+            line-height: 2;
+            color: #3c4043;
+        }
+        .features-list li {
+            margin-bottom: 15px;
+        }
+        /* Ссылка на правила внизу */
+        .rules-footer {
+            margin-top: 50px;
+            border-top: 1px solid #dadce0;
+            padding-top: 35px;
+            text-align: left;
+        }
+        .rules-link {
+            font-size: 1.2rem;
+            color: #111116;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.2s;
+        }
+        .rules-link:hover {
+            color: #ff1493;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Шапка сайта -->
+    <div class="hero">
+        <h1 class="logo">VDWORLD</h1>
+    </div>
+
+    <!-- Основная белая страница -->
+    <div class="main-content">
+        
+        <!-- Кнопка IP адреса -->
+        <button class="ip-bar" onclick="copyIP()">
+            play2.eternalzero.cloud:26310
+        </button>
+
+        <!-- Раздел VDVISUALS -->
+        <div class="visuals-section">
+            <div class="visuals-left">
+                <div class="vdv-logo">VDV</div>
+                <!-- Вставьте вместо ССЫЛКА_НА_КЛИЕНТ вашу ссылку с Google Диска -->
+                <a href="https://drive.google.com/file/d/1VUhhqZ-tEQrKfk6tqPn-S0g9cZojlFbh/view?usp=drive_link" target="_blank" class="btn-download">📥 Скачать клиент 📥</a>
+            </div>
+
+            <div class="visuals-right">
+                <h2>VDVISUALS</h2>
+                <ul class="features-list">
+                    <li>💻 <strong>VDVISUALS</strong> — самые лучшие клиенты для вашего Minecraft! 🚀</li>
+                    <li>✨ Делает игру ещё красивее с очень качественной графикой</li>
+                    <li>🩸 Добавляет множество крутых функций</li>
+                    <li>📍 Одна из них — координаты после смерти</li>
+                    <li>⚡ И это далеко не всё!</li>
+                    <li>🔮 Скачивайте VDVISUALS и наслаждайтесь игрой! 💙</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ссылка на форум / правила -->
+        <div class="rules-footer">
+            <!-- Вставьте вместо ССЫЛКА_НА_ФОРУМ вашу реальную ссылку на Google Форму -->
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSexu5FPe_7v3edw3MdEHGzUpJd4PvctED7lB_UIGDUQKf3UCQ/viewform?usp=header" target="_blank" class="rules-link">
+                📜 Правила сервера & Набор в модерацию
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        function copyIP() {
+            const ipAddress = "play2.eternalzero.cloud:26310";
+            navigator.clipboard.writeText(ipAddress).then(() => {
+                alert("🚀 IP-адрес сервера VDWORLD успешно скопирован!");
+            });
+        }
+
+        // Анимация пиксельных частиц
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 4 + 2;
+                this.speedY = -(Math.random() * 0.5 + 0.2);
+                this.color = Math.random() > 0.5 ? 'rgba(255, 20, 147, 0.12)' : 'rgba(51, 204, 255, 0.12)';
+            }
+            update() {
+                this.y += this.speedY;
+                if (this.y < -10) { this.y = canvas.height + 10; this.x = Math.random() * canvas.width; }
+            }
+            draw() { ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.size, this.size); }
+        }
+        for (let i = 0; i < 30; i++) { particles.push(new Particle()); }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
